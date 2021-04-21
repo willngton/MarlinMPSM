@@ -1,5 +1,5 @@
 /**
- * Marlin 3D Printer Firmware
+ * Marlin 3D Printer Firmware - MPSM Mod -  JAN29 Uart Mode
  * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
@@ -20,6 +20,8 @@
  *
  */
 #pragma once
+
+//#define LVGL_UI
 
 /**
  * Configuration_adv.h
@@ -266,7 +268,7 @@
  * Thermal Protection parameters for the bed are just as above for hotends.
  */
 #if ENABLED(THERMAL_PROTECTION_BED)
-  #define THERMAL_PROTECTION_BED_PERIOD        20 // Seconds
+  #define THERMAL_PROTECTION_BED_PERIOD        50 // Seconds
   #define THERMAL_PROTECTION_BED_HYSTERESIS     2 // Degrees Celsius
 
   /**
@@ -437,9 +439,9 @@
  * Hotend Idle Timeout
  * Prevent filament in the nozzle from charring and causing a critical jam.
  */
-//#define HOTEND_IDLE_TIMEOUT
+#define HOTEND_IDLE_TIMEOUT
 #if ENABLED(HOTEND_IDLE_TIMEOUT)
-  #define HOTEND_IDLE_TIMEOUT_SEC (5*60)    // (seconds) Time without extruder movement to trigger protection
+  #define HOTEND_IDLE_TIMEOUT_SEC (15*60)    // (seconds) Time without extruder movement to trigger protection
   #define HOTEND_IDLE_MIN_TRIGGER   180     // (°C) Minimum temperature to enable hotend protection
   #define HOTEND_IDLE_NOZZLE_TARGET   0     // (°C) Safe temperature for the nozzle after timeout
   #define HOTEND_IDLE_BED_TARGET      0     // (°C) Safe temperature for the bed after timeout
@@ -463,7 +465,7 @@
  */
 //#define USE_CONTROLLER_FAN
 #if ENABLED(USE_CONTROLLER_FAN)
-  //#define CONTROLLER_FAN_PIN -1        // Set a custom pin for the controller fan
+  #define CONTROLLER_FAN_PIN 7        // Set a custom pin for the controller fan
   //#define CONTROLLER_FAN_USE_Z_ONLY    // With this option only the Z axis is considered
   //#define CONTROLLER_FAN_IGNORE_Z      // Ignore Z stepper. Useful when stepper timeout is disabled.
   #define CONTROLLERFAN_SPEED_MIN      0 // (0-255) Minimum speed. (If set below this value the fan is turned off.)
@@ -540,7 +542,7 @@
  * Multiple extruders can be assigned to the same pin in which case
  * the fan will turn on when any selected extruder is above the threshold.
  */
-#define E0_AUTO_FAN_PIN -1
+#define E0_AUTO_FAN_PIN FAN1_PIN
 #define E1_AUTO_FAN_PIN -1
 #define E2_AUTO_FAN_PIN -1
 #define E3_AUTO_FAN_PIN -1
@@ -741,7 +743,7 @@
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
 
-//#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
+#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
 //#define HOME_Y_BEFORE_X                     // If G28 contains XY home Y before X
 //#define HOME_Z_FIRST                        // Home Z first. Requires a Z-MIN endstop (not a probe).
 //#define CODEPENDENT_XY_HOMING               // If X/Y can't home without homing Y/X first
@@ -867,7 +869,7 @@
 
   // On a 300mm bed a 5% grade would give a misalignment of ~1.5cm
   #define G34_MAX_GRADE              5    // (%) Maximum incline that G34 will handle
-  #define Z_STEPPER_ALIGN_ITERATIONS 5    // Number of iterations to apply during alignment
+  #define Z_STEPPER_ALIGN_ITERATIONS 3    // Number of iterations to apply during alignment
   #define Z_STEPPER_ALIGN_ACC        0.02 // Stop iterating early if the accuracy is better than this
   #define RESTORE_LEVELING_AFTER_G34      // Restore leveling after G34 is done?
   // After G34, re-home Z (G28 Z) or just calculate it from the last probe heights?
@@ -881,10 +883,10 @@
 //#define ASSISTED_TRAMMING
 #if ENABLED(ASSISTED_TRAMMING)
 
-  // Define positions for probe points.
-  #define TRAMMING_POINT_XY { {  20, 20 }, { 180,  20 }, { 180, 180 }, { 20, 180 } }
+  // Define positions for probing points, use the hotend as reference not the sensor.
+  #define TRAMMING_POINT_XY { {  20, 20 }, { 200,  20 }, { 200, 200 }, { 20, 200 } }
 
-  // Define position names for probe points.
+  // Define positions names for probing points.
   #define TRAMMING_POINT_NAME_1 "Front-Left"
   #define TRAMMING_POINT_NAME_2 "Front-Right"
   #define TRAMMING_POINT_NAME_3 "Back-Right"
@@ -893,8 +895,8 @@
   #define RESTORE_LEVELING_AFTER_G35    // Enable to restore leveling setup after operation
   //#define REPORT_TRAMMING_MM          // Report Z deviation (mm) for each point relative to the first
 
-  //#define ASSISTED_TRAMMING_WIZARD    // Add a Tramming Wizard to the LCD menu
-
+  //#define ASSISTED_TRAMMING_MENU_ITEM // Add a menu item to run G35 Assisted Tramming (MarlinUI)
+  //#define ASSISTED_TRAMMING_WIZARD    // Make the menu item open a Tramming Wizard sub-menu
   //#define ASSISTED_TRAMMING_WAIT_POSITION { X_CENTER, Y_CENTER, 30 } // Move the nozzle out of the way for adjustment
 
   /**
@@ -1056,7 +1058,7 @@
  * vibration and surface artifacts. The algorithm adapts to provide the best possible step smoothing at the
  * lowest stepping frequencies.
  */
-//#define ADAPTIVE_STEP_SMOOTHING
+#define ADAPTIVE_STEP_SMOOTHING
 
 /**
  * Custom Microstepping
@@ -1099,7 +1101,7 @@
 /**
  * I2C-based DIGIPOTs (e.g., Azteeg X3 Pro)
  */
-//#define DIGIPOT_MCP4018             // Requires https://github.com/felias-fogg/SlowSoftI2CMaster
+//#define DIGIPOT_MCP4018             // Requires https://github.com/stawel/SlowSoftI2CMaster
 //#define DIGIPOT_MCP4451
 #if EITHER(DIGIPOT_MCP4018, DIGIPOT_MCP4451)
   #define DIGIPOT_I2C_NUM_CHANNELS 8  // 5DPRINT:4   AZTEEG_X3_PRO:8   MKS_SBASE:5   MIGHTYBOARD_REVE:5
@@ -1157,7 +1159,7 @@
 
   // Add Probe Z Offset calibration to the Z Probe Offsets menu
   #if HAS_BED_PROBE
-    //#define PROBE_OFFSET_WIZARD
+    #define PROBE_OFFSET_WIZARD
     #if ENABLED(PROBE_OFFSET_WIZARD)
       //
       // Enable to init the Probe Z-Offset when starting the Wizard.
@@ -1172,7 +1174,7 @@
   #endif
 
   // Include a page of printer information in the LCD Main Menu
-  //#define LCD_INFO_MENU
+  #define LCD_INFO_MENU
   #if ENABLED(LCD_INFO_MENU)
     //#define LCD_PRINTER_INFO_IS_BOOTSCREEN // Show bootscreen(s) instead of Printer Info pages
   #endif
@@ -1213,65 +1215,54 @@
   //#define PREHEAT_SHORTCUT_MENU_ITEM
 
 #endif // HAS_LCD_MENU
-
 #if HAS_DISPLAY
   // The timeout (in ms) to return to the status screen from sub-menus
-  //#define LCD_TIMEOUT_TO_STATUS 15000
+  #define LCD_TIMEOUT_TO_STATUS 60000
 
   #if ENABLED(SHOW_BOOTSCREEN)
-    #define BOOTSCREEN_TIMEOUT 4000      // (ms) Total Duration to display the boot screen(s)
+    #define BOOTSCREEN_TIMEOUT 60000      // (ms) Total Duration to display the boot screen(s)
     #if EITHER(HAS_MARLINUI_U8GLIB, TFT_COLOR_UI)
       #define BOOT_MARLIN_LOGO_SMALL     // Show a smaller Marlin logo on the Boot Screen (saving lots of flash)
     #endif
   #endif
 
-  // Scroll a longer status message into view
-  //#define STATUS_MESSAGE_SCROLLING
+// Scroll a longer status message into view
+//#define STATUS_MESSAGE_SCROLLING
 
-  // On the Info Screen, display XY with one decimal place when possible
-  //#define LCD_DECIMAL_SMALL_XY
+// On the Info Screen, display XY with one decimal place when possible
+//#define LCD_DECIMAL_SMALL_XY
 
-  // Add an 'M73' G-code to set the current percentage
-  //#define LCD_SET_PROGRESS_MANUALLY
+// Add an 'M73' G-code to set the current percentage
+//#define LCD_SET_PROGRESS_MANUALLY
 
-  // Show the E position (filament used) during printing
-  //#define LCD_SHOW_E_TOTAL
+// Show the E position (filament used) during printing
+//#define LCD_SHOW_E_TOTAL
 #endif
 
 #if EITHER(SDSUPPORT, LCD_SET_PROGRESS_MANUALLY) && ANY(HAS_MARLINUI_U8GLIB, HAS_MARLINUI_HD44780, IS_TFTGLCD_PANEL, EXTENSIBLE_UI)
-  //#define SHOW_REMAINING_TIME       // Display estimated time to completion
+  #define SHOW_REMAINING_TIME       // Display estimated time to completion
   #if ENABLED(SHOW_REMAINING_TIME)
     //#define USE_M73_REMAINING_TIME  // Use remaining time from M73 command instead of estimation
     //#define ROTATE_PROGRESS_DISPLAY // Display (P)rogress, (E)lapsed, and (R)emaining time
   #endif
 
   #if EITHER(HAS_MARLINUI_U8GLIB, EXTENSIBLE_UI)
-    //#define PRINT_PROGRESS_SHOW_DECIMALS // Show progress with decimal digits
+    #define PRINT_PROGRESS_SHOW_DECIMALS // Show progress with decimal digits
   #endif
 
   #if EITHER(HAS_MARLINUI_HD44780, IS_TFTGLCD_PANEL)
-    //#define LCD_PROGRESS_BAR            // Show a progress bar on HD44780 LCDs for SD printing
+    #define LCD_PROGRESS_BAR            // Show a progress bar on HD44780 LCDs for SD printing
     #if ENABLED(LCD_PROGRESS_BAR)
       #define PROGRESS_BAR_BAR_TIME 2000  // (ms) Amount of time to show the bar
       #define PROGRESS_BAR_MSG_TIME 3000  // (ms) Amount of time to show the status message
       #define PROGRESS_MSG_EXPIRE   0     // (ms) Amount of time to retain the status message (0=forever)
       //#define PROGRESS_MSG_ONCE         // Show the message for MSG_TIME then clear it
-      //#define LCD_PROGRESS_BAR_TEST     // Add a menu item to test the progress bar
+      #define LCD_PROGRESS_BAR_TEST     // Add a menu item to test the progress bar
     #endif
   #endif
 #endif
 
 #if ENABLED(SDSUPPORT)
-  /**
-   * SD Card SPI Speed
-   * May be required to resolve "volume init" errors.
-   *
-   * Enable and set to SPI_HALF_SPEED, SPI_QUARTER_SPEED, or SPI_EIGHTH_SPEED
-   *  otherwise full speed will be applied.
-   *
-   * :['SPI_HALF_SPEED', 'SPI_QUARTER_SPEED', 'SPI_EIGHTH_SPEED']
-   */
-  //#define SD_SPI_SPEED SPI_HALF_SPEED
 
   // The standard SD detect circuit reads LOW when media is inserted and HIGH when empty.
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
@@ -1292,7 +1283,6 @@
   #define SDCARD_RATHERRECENTFIRST
 
   #define SD_MENU_CONFIRM_START             // Confirm the selected SD file before printing
-
   //#define NO_SD_AUTOSTART                 // Remove auto#.g file support completely to save some Flash, SRAM
   //#define MENU_ADDAUTOSTART               // Add a menu option to run auto#.g files
 
@@ -1312,7 +1302,13 @@
    * an option on the LCD screen to continue the print from the last-known
    * point in the file.
    */
-  //#define POWER_LOSS_RECOVERY
+ #ifdef LVGL_UI
+    //#define POWER_LOSS_RECOVERY //- LVGL no
+#else
+   #define ADVANCED_PAUSE_FEATURE
+   #define POWER_LOSS_RECOVERY
+#endif
+
   #if ENABLED(POWER_LOSS_RECOVERY)
     #define PLR_ENABLED_DEFAULT   false // Power Loss Recovery enabled by default. (Set with 'M413 Sn' & M500)
     //#define BACKUP_POWER_SUPPLY       // Backup power / UPS to move the steppers on power loss
@@ -1378,7 +1374,7 @@
   //#define UTF_FILENAME_SUPPORT
 
   // This allows hosts to request long names for files and folders with M33
-  //#define LONG_FILENAME_HOST_SUPPORT
+  #define LONG_FILENAME_HOST_SUPPORT
 
   // Enable this option to scroll long filenames in the SD card menu
   //#define SCROLL_LONG_FILENAMES
@@ -1509,7 +1505,7 @@
  */
 #if HAS_MARLINUI_U8GLIB
   // Show SD percentage next to the progress bar
-  //#define DOGM_SD_PERCENT
+  #define DOGM_SD_PERCENT
 
   // Save many cycles by drawing a hollow frame or no frame on the Info Screen
   //#define XYZ_NO_FRAME
@@ -1570,6 +1566,7 @@
   //#define STATUS_ALT_FAN_BITMAP     // Use the alternative fan bitmap
   //#define STATUS_FAN_FRAMES 3       // :[0,1,2,3,4] Number of fan animation frames
   //#define STATUS_HEAT_PERCENT       // Show heating in a progress bar
+  //#define BOOT_MARLIN_LOGO_SMALL    // Show a smaller Marlin logo on the Boot Screen (saving 399 bytes of flash)
   //#define BOOT_MARLIN_LOGO_ANIMATED // Animated Marlin logo. Costs ~‭3260 (or ~940) bytes of PROGMEM.
 
   // Frivolous Game Options
@@ -1618,35 +1615,10 @@
 #endif // HAS_DGUS_LCD
 
 //
-// Additional options for AnyCubic Chiron TFT displays
-//
-#if ENABLED(ANYCUBIC_LCD_CHIRON)
-  // By default the type of panel is automatically detected.
-  // Enable one of these options if you know the panel type.
-  //#define CHIRON_TFT_STANDARD
-  //#define CHIRON_TFT_NEW
-
-  // Enable the longer Anycubic powerup startup tune
-  //#define AC_DEFAULT_STARTUP_TUNE
-
-  /**
-   * Display Folders
-   * By default the file browser lists all G-code files (including those in subfolders) in a flat list.
-   * Enable this option to display a hierarchical file browser.
-   *
-   * NOTES:
-   * - Without this option it helps to enable SDCARD_SORT_ALPHA so files are sorted before/after folders.
-   * - When used with the "new" panel, folder names will also have '.gcode' appended to their names.
-   *   This hack is currently required to force the panel to show folders.
-   */
-  #define AC_SD_FOLDER_VIEW
-#endif
-
-//
 // Specify additional languages for the UI. Default specified by LCD_LANGUAGE.
 //
 #if ANY(DOGLCD, TFT_COLOR_UI, TOUCH_UI_FTDI_EVE)
-  //#define LCD_LANGUAGE_2 fr
+  #define LCD_LANGUAGE_2 pt_br
   //#define LCD_LANGUAGE_3 de
   //#define LCD_LANGUAGE_4 es
   //#define LCD_LANGUAGE_5 it
@@ -1787,7 +1759,7 @@
  *
  * Warning: Does not respect endstops!
  */
-//#define BABYSTEPPING
+#define BABYSTEPPING
 #if ENABLED(BABYSTEPPING)
   //#define INTEGRATED_BABYSTEPPING         // EXPERIMENTAL integration of babystepping into the Stepper ISR
   //#define BABYSTEP_WITHOUT_HOMING
@@ -2141,19 +2113,8 @@
 //#define EMERGENCY_PARSER
 
 /**
- * Realtime Reporting (requires EMERGENCY_PARSER)
- *
- * - Report position and state of the machine (like Grbl).
- * - Auto-report position during long moves.
- * - Useful for CNC/LASER.
- *
- * Adds support for commands:
- *  S000 : Report State and Position while moving.
- *  P000 : Instant Pause / Hold while moving.
- *  R000 : Resume from Pause / Hold.
- *
- * - During Hold all Emergency Parser commands are available, as usual.
- * - Enable NANODLP_Z_SYNC and NANODLP_ALL_AXIS for move command end-state reports.
+ * Realtime Reporting
+ * Add support for commands S000 State, P000 Pause, and R000 Resume
  */
 //#define REALTIME_REPORTING_COMMANDS
 #if ENABLED(REALTIME_REPORTING_COMMANDS)
@@ -2307,7 +2268,12 @@
  * Requires NOZZLE_PARK_FEATURE.
  * This feature is required for the default FILAMENT_RUNOUT_SCRIPT.
  */
-//#define ADVANCED_PAUSE_FEATURE
+#ifdef LVGL_UI
+    //#define ADVANCED_PAUSE_FEATURE
+#else
+   #define ADVANCED_PAUSE_FEATURE
+#endif
+
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   #define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
   #define PAUSE_PARK_RETRACT_LENGTH            2  // (mm) Initial retract.
@@ -2345,10 +2311,10 @@
   #define FILAMENT_CHANGE_ALERT_BEEPS         10  // Number of alert beeps to play when a response is needed.
   #define PAUSE_PARK_NO_STEPPER_TIMEOUT           // Enable for XYZ steppers to stay powered on during filament change.
 
-  //#define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
+  #define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
   //#define HOME_BEFORE_FILAMENT_CHANGE           // If needed, home before parking for filament change
 
-  //#define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
+  #define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
   //#define FILAMENT_UNLOAD_ALL_EXTRUDERS         // Allow M702 to unload all extruders above a minimum target temp (as set by M302)
 #endif
 
@@ -2489,7 +2455,7 @@
   #define INTERPOLATE      true
 
   #if AXIS_IS_TMC(X)
-    #define X_CURRENT       800        // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT       340 //420        // (mA) RMS current. Multiply by 1.414 for peak current.
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS     16        // 0..256
     #define X_RSENSE          0.11
@@ -2507,7 +2473,7 @@
   #endif
 
   #if AXIS_IS_TMC(Y)
-    #define Y_CURRENT       800
+    #define Y_CURRENT       360 //460 //547
     #define Y_CURRENT_HOME  Y_CURRENT
     #define Y_MICROSTEPS     16
     #define Y_RSENSE          0.11
@@ -2525,7 +2491,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z)
-    #define Z_CURRENT       800
+    #define Z_CURRENT        360 //460 //547
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
@@ -2561,7 +2527,7 @@
   #endif
 
   #if AXIS_IS_TMC(E0)
-    #define E0_CURRENT      800
+    #define E0_CURRENT      400 //480 //576
     #define E0_MICROSTEPS    16
     #define E0_RSENSE         0.11
     #define E0_CHAIN_POS     -1
@@ -2744,7 +2710,7 @@
    * M912 - Clear stepper driver overtemperature pre-warn condition flag.
    * M122 - Report driver parameters (Requires TMC_DEBUG)
    */
-  //#define MONITOR_DRIVER_STATUS
+  #define MONITOR_DRIVER_STATUS
 
   #if ENABLED(MONITOR_DRIVER_STATUS)
     #define CURRENT_STEP_DOWN     50  // [mA]
@@ -2759,17 +2725,17 @@
    * STEALTHCHOP_(XY|Z|E) must be enabled to use HYBRID_THRESHOLD.
    * M913 X/Y/Z/E to live tune the setting
    */
-  //#define HYBRID_THRESHOLD
+  #define HYBRID_THRESHOLD
 
-  #define X_HYBRID_THRESHOLD     100  // [mm/s]
-  #define X2_HYBRID_THRESHOLD    100
-  #define Y_HYBRID_THRESHOLD     100
-  #define Y2_HYBRID_THRESHOLD    100
-  #define Z_HYBRID_THRESHOLD       3
+  #define X_HYBRID_THRESHOLD     130  // [mm/s]
+  #define X2_HYBRID_THRESHOLD    130
+  #define Y_HYBRID_THRESHOLD     130
+  #define Y2_HYBRID_THRESHOLD    130
+  #define Z_HYBRID_THRESHOLD       5
   #define Z2_HYBRID_THRESHOLD      3
   #define Z3_HYBRID_THRESHOLD      3
   #define Z4_HYBRID_THRESHOLD      3
-  #define E0_HYBRID_THRESHOLD     30
+  #define E0_HYBRID_THRESHOLD     40
   #define E1_HYBRID_THRESHOLD     30
   #define E2_HYBRID_THRESHOLD     30
   #define E3_HYBRID_THRESHOLD     30
@@ -2841,7 +2807,7 @@
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continous reporting.
    */
-  //#define TMC_DEBUG
+  #define TMC_DEBUG
 
   /**
    * You can set your own advanced settings by filling in predefined functions.
@@ -3213,11 +3179,11 @@
     #define SPEED_POWER_MIN               0    // (%) 0-100
     #define SPEED_POWER_MAX             100    // (%) 0-100
     #define SPEED_POWER_STARTUP          80    // (%) M3/M4 speed/power default (with no arguments)
-
+    
     // Define the minimum and maximum test pulse time values for a laser test fire function
     #define LASER_TEST_PULSE_MIN           1   // Used with Laser Control Menu
     #define LASER_TEST_PULSE_MAX         999   // Caution: Menu may not show more than 3 characters
-
+  
     /**
      * Enable inline laser power to be handled in the planner / stepper routines.
      * Inline power is specified by the I (inline) flag in an M3 command (e.g., M3 S20 I)
@@ -3789,13 +3755,14 @@
 /**
  * NanoDLP Sync support
  *
- * Support for Synchronized Z moves when used with NanoDLP. G0/G1 axis moves will
- * output a "Z_move_comp" string to enable synchronization with DLP projector exposure.
- * This feature allows you to use [[WaitForDoneMessage]] instead of M400 commands.
+ * Add support for Synchronized Z moves when using with NanoDLP. G0/G1 axis moves will output "Z_move_comp"
+ * string to enable synchronization with DLP projector exposure. This change will allow to use
+ * [[WaitForDoneMessage]] instead of populating your gcode with M400 commands
  */
 //#define NANODLP_Z_SYNC
 #if ENABLED(NANODLP_Z_SYNC)
-  //#define NANODLP_ALL_AXIS  // Send a "Z_move_comp" report for any axis move (not just Z).
+  //#define NANODLP_ALL_AXIS  // Enables "Z_move_comp" output on any axis move.
+                              // Default behavior is limited to Z axis only.
 #endif
 
 /**
@@ -3963,10 +3930,50 @@
 
 // Enable Marlin dev mode which adds some special commands
 //#define MARLIN_DEV_MODE
+// 
+// TFT/(COLOR UI) Custom
+//
+//#define COLOR_BACKGROUND COLOR_DARKGREY
+//#define COLOR_SELECTION_BG COLOR_BLACK
+//#define COLOR_MENU_TEXT COLOR_LIGHT_BLUE
+//#define COLOR_MENU_VALUE COLOR_YELLOW
+//#define COLOR_PROGRESS_BAR COLOR_VIVID_GREEN
 
 /**
- * Postmortem Debugging captures misbehavior and outputs the CPU status and backtrace to serial.
- * When running in the debugger it will break for debugging. This is useful to help understand
- * a crash from a remote location. Requires ~400 bytes of SRAM and 5Kb of flash.
- */
-//#define POSTMORTEM_DEBUGGING
+ * 
+ * 
+#define COLOR_BLACK           0x0000  // #000000
+#define COLOR_WHITE           0xFFFF  // #FFFFFF
+#define COLOR_SILVER          0xC618  // #C0C0C0
+#define COLOR_GREY            0x7BEF  // #808080
+#define COLOR_DARKGREY        0x4208  // #404040
+#define COLOR_DARKGREY2       0x39E7  // #303030
+#define COLOR_DARK            0x0003  // Some dark color
+
+#define COLOR_RED             0xF800  // #FF0000
+#define COLOR_SCARLET         0xF904  // #FF2020
+#define COLOR_LIME            0x7E00  // #00FF00
+#define COLOR_BLUE            0x001F  // #0000FF
+#define COLOR_LIGHT_BLUE      0x061F  // #00C3FF
+#define COLOR_YELLOW          0xFFE0  // #FFFF00
+#define COLOR_MAGENTA         0xF81F  // #FF00FF
+#define COLOR_FUCHSIA         0xF81F  // #FF00FF
+#define COLOR_CYAN            0x07FF  // #00FFFF
+#define COLOR_AQUA            0x07FF  // #00FFFF
+#define COLOR_DODGER_BLUE     0x041F  // #0080FF
+#define COLOR_VIVID_VIOLET    0x7933 // #772399
+
+#define COLOR_DARK_PURPLE     0x9930  // #992380
+
+#define COLOR_MAROON          0x7800  // #800000
+#define COLOR_GREEN           0x03E0  // #008000
+#define COLOR_NAVY            0x000F  // #000080
+#define COLOR_OLIVE           0x8400  // #808000
+#define COLOR_PURPLE          0x8010  // #800080
+#define COLOR_TEAL            0x0410  // #008080
+
+#define COLOR_ORANGE          0xFC00  // #FF7F00
+#define COLOR_VIVID_GREEN     0x7FE0  // #7FFF00
+#define COLOR_DARK_ORANGE     0xFC40  // #FF8C00
+#define COLOR_CORAL_RED       0xF9E7  // #FF3F3F
+**/
